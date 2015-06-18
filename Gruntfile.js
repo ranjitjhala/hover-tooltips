@@ -12,24 +12,24 @@ module.exports = function (grunt) {
                 src: ['lib/*.js*', 'lib/*.d.ts']
             }
         },
-        ts: {
-            lib: {
-                src: ['lib/**/*.ts'],
-                options: {
-                    target: 'es3',
-                    module: 'commonjs',
-                    sourceMaps: true,
-                    declaration: true,
-                    removeComments: false
-                }
-            }
-        },
+        // ts: {
+        //     lib: {
+        //         src: ['lib/**/*.ts'],
+        //         options: {
+        //             target: 'es3',
+        //             module: 'commonjs',
+        //             sourceMaps: true,
+        //             declaration: true,
+        //             removeComments: false
+        //         }
+        //     }
+        // },
         // copy: {
-            // lib: {
-                // files: [
-                    // { expand: true, flatten: true, src: ['src/*.js'], dest: './lib/', filter: 'isFile' }
-                // ]
-            // }
+        //    lib: {
+        //      files: [
+        //             { expand: true, flatten: true, src: ['src/*.js'], dest: './lib/', filter: 'isFile' }
+        //             ]
+        //      }
         // },
         watch: {
             lib: {

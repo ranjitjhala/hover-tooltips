@@ -1,113 +1,116 @@
 /// <reference path="../typings/globals.d.ts" />
 
-// This needs to be filled in
-function getInfo(p:Position):string {
-  return "I am at line: " + p.line + " column: " + p.column;
-}
+/*****************************************************************/
+/*****************************************************************/
+/*****************************************************************/
 
-
-declare var $;
-import boo      = require('atom-space-pen-views');
-// import {$} from "atom-space-pen-views";
-import path     = require('path');
-import emissary = require('emissary');
+import { $ } from "atom-space-pen-views";
+import emissary    = require('emissary');
+import fs          = require('fs');
+import tooltipView = require('./tooltipView');
+import TooltipView = tooltipView.TooltipView;
+import Info     = require('./getInfo');
 
 var Subscriber = emissary.Subscriber;
-var TooltipView: { new (rect: any): IToolTipView; } = require('../views/tooltip-view').TooltipView;
 
-
-interface Position {
-  file:string;
-  line:number;
-  column:number;
+function getFromShadowDom(element: any, selector: string): any {
+  var el = element[0];
+  var found = (<any> el).rootElement.querySelectorAll(selector);
+  return $(found[0]);
 }
 
-interface IToolTipView {
-    updateText(text: string);
 
-    // Methods from base View
-    remove();
-}
+function attach(editorView : JQuery, editor: AtomCore.IEditor){
+    var rawView: any = editorView[0];
 
-function attach(editorView: any) {
     // Only on ".ts" files
-    var editor   = editorView.editor;
     var filePath = editor.getPath();
-    var filename = path.basename(filePath);
-    var ext = path.extname(filename);
-    if (ext !== '.ts') return;
+    if (!Info.isHoverExt(filePath)) return;
 
-    var program = lestat.getOrCreateProgram(filePath);
+    // We only create a "program" once the file is persisted to disk
+    if (!fs.existsSync(filePath)) return;
 
-    var scroll = editorView.find('.scroll-view');
+    var scroll = getFromShadowDom(editorView, '.scroll-view');
     var subscriber = new Subscriber();
     var exprTypeTimeout = null;
-    var exprTypeTooltip: IToolTipView = null;
-    subscriber.subscribe(scroll, 'mousemove',(e) => {
+    var exprTypeTooltip: TooltipView = null;
+
+    // to debounce mousemove event's firing for some reason on some machines
+    var lastExprTypeBufferPt: any;
+
+    subscriber.subscribe(scroll, 'mousemove', (e) => {
+        var pixelPt = pixelPositionFromMouseEvent(editorView, e)
+        var screenPt = editor.screenPositionForPixelPosition(pixelPt)
+        var bufferPt = editor.bufferPositionForScreenPosition(screenPt)
+        if (lastExprTypeBufferPt && lastExprTypeBufferPt.isEqual(bufferPt) && exprTypeTooltip)
+            return;
+
+        lastExprTypeBufferPt = bufferPt;
+
         clearExprTypeTimeout();
         exprTypeTimeout = setTimeout(() => showExpressionType(e), 100);
     });
-    subscriber.subscribe(scroll, 'mouseout',(e) => clearExprTypeTimeout());
-
+    subscriber.subscribe(scroll, 'mouseout', (e) => clearExprTypeTimeout());
+    subscriber.subscribe(scroll, 'keydown', (e) => clearExprTypeTimeout());
 
     // Setup for clearing
-    subscriber.subscribe(editorView, 'editor:will-be-removed',() => deactivate());
+    atom.commands.add('atom-text-editor', 'editor:will-be-removed', (e) => {
+        if (e.currentTarget == editorView[0]) {
+            deactivate();
+        }
+    });
+
 
     function showExpressionType(e: MouseEvent) {
 
         // If we are already showing we should wait for that to clear
         if (exprTypeTooltip) return;
 
-        var pixelPt         = pixelPositionFromMouseEvent(editorView, e);
-        var screenPt        = editor.screenPositionForPixelPosition(pixelPt);
-        var bufferPt        = editor.bufferPositionForScreenPosition(screenPt);
-        var curCharPixelPt  = editor.pixelPositionForBufferPosition([bufferPt.row, bufferPt.column]);
-        var nextCharPixelPt = editor.pixelPositionForBufferPosition([bufferPt.row, bufferPt.column + 1]);
+        var pixelPt = pixelPositionFromMouseEvent(editorView, e);
+        pixelPt.top += editor.displayBuffer.getScrollTop();
+        pixelPt.left += editor.displayBuffer.getScrollLeft();
+        var screenPt = editor.screenPositionForPixelPosition(pixelPt);
+        var bufferPt = editor.bufferPositionForScreenPosition(screenPt);
+        var curCharPixelPt = rawView.pixelPositionForBufferPosition([bufferPt.row, bufferPt.column]);
+        var nextCharPixelPt = rawView.pixelPositionForBufferPosition([bufferPt.row, bufferPt.column + 1]);
 
         if (curCharPixelPt.left >= nextCharPixelPt.left) return;
 
         // find out show position
-        var offset = editorView.lineHeight * 0.7;
-        var tooltipRect = { left  : e.clientX
-                          , right : e.clientX
-                          , top   : e.clientY - offset
-                          , bottom: e.clientY + offset };
-
+        var offset = (<any>editor).getLineHeightInPixels() * 0.7;
+        var tooltipRect = {
+            left: e.clientX,
+            right: e.clientX,
+            top: e.clientY - offset,
+            bottom: e.clientY + offset
+        };
         exprTypeTooltip = new TooltipView(tooltipRect);
 
+        var position = getEditorPositionForBufferPosition(editor, bufferPt);
+
         var pos  = { file   : filePath
-                  ,  line   : bufferPt.row
-                  ,  column : bufferPt.column };
-
-        var info = getInfo(pos);
-
-        if (!info) {
-          hideExpressionType();
-        } else {
-          var message = "<b>" + info + "</b>" ;
-          exprTypeTooltip.updateText(message);
-        }
+                  ,  line   : 1 + bufferPt.row
+                  ,  column : 1 + bufferPt.column };
 
         // Actually make the program manager query
-        // ORIG var position = program.languageServiceHost.getIndexFromPosition(filePath, { line: bufferPt.row, ch: bufferPt.column });
-        // ORIG var info = program.languageService.getQuickInfoAtPosition(filePath, position);
-        // ORIG if (!info) {
-        // ORIG hideExpressionType();
-        // ORIG } else {
-        // ORIG var displayName = ts.displayPartsToString(info.displayParts || []);
-        // ORIG var documentation = ts.displayPartsToString(info.documentation || []);
-        // ORIG var message = `<b>${displayName}</b>`;
-        // ORIG if(documentation) message = message + `<br/><i>${documentation}</i>`;
-        // ORIG exprTypeTooltip.updateText(message);
-        // ORIG }
+        var resp = Info.getHoverInfo(pos);
+        if (!resp.valid) {
+          hideExpressionType();
+        } else {
+          var message = `<b>${(resp.info) }</b>`;
+          // Sorry about this "if". It's in the code I copied so I guess its there for a reason
+          if (exprTypeTooltip) {
+            exprTypeTooltip.updateText(message);
+          }
+        }
     }
-
 
     function deactivate() {
         subscriber.unsubscribe();
         clearExprTypeTimeout();
     }
 
+    /** clears the timeout && the tooltip */
     function clearExprTypeTimeout() {
         if (exprTypeTimeout) {
             clearTimeout(exprTypeTimeout);
@@ -115,18 +118,30 @@ function attach(editorView: any) {
         }
         hideExpressionType();
     }
-
     function hideExpressionType() {
         if (!exprTypeTooltip) return;
-        exprTypeTooltip.remove();
+        exprTypeTooltip.$.remove();
         exprTypeTooltip = null;
     }
 }
 
 
+
+// Optimized version where we do not ask this of the languageServiceHost
+export function getEditorPosition(editor: AtomCore.IEditor): number {
+    var bufferPos = editor.getCursorBufferPosition();
+    return getEditorPositionForBufferPosition(editor, bufferPos);
+}
+
+// Further optimized if you already have the bufferPos
+export function getEditorPositionForBufferPosition(editor: AtomCore.IEditor, bufferPos: any /* TextBuffer.IPoint */): number {
+    var buffer = editor.getBuffer();
+    return buffer.characterIndexForPosition(bufferPos);
+}
+
 function pixelPositionFromMouseEvent(editorView, event: MouseEvent) {
     var clientX = event.clientX, clientY = event.clientY;
-    var linesClientRect = editorView.find('.lines')[0].getBoundingClientRect();
+    var linesClientRect = getFromShadowDom(editorView, '.lines')[0].getBoundingClientRect();
     var top = clientY - linesClientRect.top;
     var left = clientX - linesClientRect.left;
     return { top: top, left: left };
@@ -142,17 +157,17 @@ function screenPositionFromMouseEvent(editorView, event) {
 
 declare var atom: any;
 
-var editorWatch: any; // AtomCore.Disposable;
+var editorWatch: AtomCore.Disposable;
 
 export function activate() {
-  editorWatch = atom.workspace.observeTextEditors((editor:any /* AtomCore.IEditor */) => {
-    // subscribe for tooltips
-    // inspiration : https://github.com/chaika2013/ide-haskell
+  editorWatch = atom.workspace.observeTextEditors((editor:AtomCore.IEditor) => {
     var editorView = $(atom.views.getView(editor));
-    attach(editorView);
+    attach(editorView, editor);
   });
 }
 
 export function deactivate() {
-    if (editorWatch) editorWatch.dispose();
+  if (editorWatch) {
+    editorWatch.dispose();
+  }
 }

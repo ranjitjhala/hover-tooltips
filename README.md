@@ -8,8 +8,14 @@ mouseover-identifier tooltips in the amazing [Atom](http://atom.io) editor!
 
 ## TODO
 
-+ hover -> hello + identifier name
-+ make info call *asynchronous*
++ hello from location
+
++ HEREHEREHERE: make info call *asynchronous*
+
++ plug into LIQUID
+
++ plug into HDEVTOOLS (harder, requires 'process' calls)
+
 
 ## Usage
 
