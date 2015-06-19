@@ -93,16 +93,17 @@ function attach(editorView : JQuery, editor: AtomCore.IEditor){
                   ,  column : 1 + bufferPt.column };
 
         // Actually make the program manager query
-        var resp = Info.getHoverInfo(pos);
-        if (!resp.valid) {
-          hideExpressionType();
-        } else {
-          var message = `<b>${(resp.info) }</b>`;
-          // Sorry about this "if". It's in the code I copied so I guess its there for a reason
-          if (exprTypeTooltip) {
-            exprTypeTooltip.updateText(message);
+        Info.getHoverInfo(pos).then((resp) => {
+          if (!resp.valid) {
+            hideExpressionType();
+          } else {
+            var message = `<b>${(resp.info) }</b>`;
+            // Sorry about this "if". It's in the code I copied so I guess its there for a reason
+            if (exprTypeTooltip) {
+              exprTypeTooltip.updateText(message);
+            }
           }
-        }
+        });
     }
 
     function deactivate() {
