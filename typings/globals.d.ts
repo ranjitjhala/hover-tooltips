@@ -1,6 +1,5 @@
 /// <reference path="tsd.d.ts" />
 
-
 declare module Hover {
 
   export interface Position {
@@ -14,6 +13,8 @@ declare module Hover {
     info:string;
   }
 
+  export interface Provider {
+    isHoverExt(filePath:string):boolean;
+    getHoverInfo(p:Hover.Position) : Promise<Hover.Info>;
+  }
 }
-
-// export declare function getInfo(p:Hover.Position) : Hover.Info;

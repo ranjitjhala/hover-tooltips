@@ -4,7 +4,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-import { $ }         from "space-pen";
+import { $ }         from "atom-space-pen-views";
 import emissary    = require('emissary');
 import fs          = require('fs');
 import tooltipView = require('./tooltipView');
@@ -19,13 +19,14 @@ function getFromShadowDom(element: any, selector: string): any {
   return $(found[0]);
 }
 
+function mkAttach(provider:Hover.Provider) {
 
-function attach(editorView : JQuery, editor: AtomCore.IEditor){
+return function attach(editorView : JQuery, editor: AtomCore.IEditor){
     var rawView: any = editorView[0];
 
     // Only on ".ts" files
     var filePath = editor.getPath();
-    if (!Info.isHoverExt(filePath)) return;
+    if (!provider.isHoverExt(filePath)) return;
 
     // We only create a "program" once the file is persisted to disk
     if (!fs.existsSync(filePath)) return;
@@ -93,7 +94,7 @@ function attach(editorView : JQuery, editor: AtomCore.IEditor){
                   ,  column : 1 + bufferPt.column };
 
         // Actually make the program manager query
-        Info.getHoverInfo(pos).then((resp) => {
+        provider.getHoverInfo(pos).then((resp) => {
           if (!resp.valid) {
             hideExpressionType();
           } else {
@@ -125,6 +126,8 @@ function attach(editorView : JQuery, editor: AtomCore.IEditor){
         exprTypeTooltip = null;
     }
 }
+}
+
 
 // Optimized version where we do not ask this of the languageServiceHost
 export function getEditorPosition(editor: AtomCore.IEditor): number {
@@ -157,6 +160,7 @@ function screenPositionFromMouseEvent(editorView, event) {
 // declare var atom: any;
 
 var editorWatch: AtomCore.Disposable;
+var attach = mkAttach(Info.dummyProvider);
 
 export function activate() {
   editorWatch = atom.workspace.observeTextEditors((editor:AtomCore.IEditor) => {
