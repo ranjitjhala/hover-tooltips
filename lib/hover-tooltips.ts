@@ -9,7 +9,7 @@ import emissary    = require('emissary');
 import fs          = require('fs');
 import tooltipView = require('./tooltipView');
 import TooltipView = tooltipView.TooltipView;
-import Info     = require('./getInfo');
+import Info        = require('./getInfo');
 
 var Subscriber = emissary.Subscriber;
 
@@ -125,8 +125,6 @@ function attach(editorView : JQuery, editor: AtomCore.IEditor){
         exprTypeTooltip = null;
     }
 }
-
-
 
 // Optimized version where we do not ask this of the languageServiceHost
 export function getEditorPosition(editor: AtomCore.IEditor): number {

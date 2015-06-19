@@ -1,32 +1,20 @@
-
 /// <reference path="../typings/globals.d.ts" />
-
-import path        = require('path');
-
-var resolve: typeof Promise.resolve = Promise.resolve.bind(Promise)
-
-// This needs to be filled in
-// OLD WORKS SYNC export function getHoverInfo(p:Hover.Position) : Hover.Info {
-  // OLD WORKS SYNC return { valid: true
-         // OLD WORKS SYNC , info : "I am at file: " + p.file + " line: " + p.line + " column: " + p.column
-         // OLD WORKS SYNC }
-// OLD WORKS SYNC }
-
+import path = require('path');
+var resolve : typeof Promise.resolve = Promise.resolve.bind(Promise)
 
 export function getHoverInfo(p:Hover.Position) : Promise<Hover.Info> {
   var msg = "I am at file: " + p.file +
             " line: "        + p.line +
             " column: "      + p.column;
-  var res = { valid: true, info : msg};
+  var res = { valid: true, info : msg };
   return resolve(res);
 }
 
 export function isHoverExt(filePath:string):boolean {
   var filename = path.basename(filePath);
-  var ext = path.extname(filename);
+  var ext      = path.extname(filename);
   return (ext === '.hs' || ext === '.lhs'); // for .haskell files
 }
-
 
 /*
 export function quickInfo(query: QuickInfoQuery): Promise<QuickInfoResponse> {
