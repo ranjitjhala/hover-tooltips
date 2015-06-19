@@ -1,5 +1,7 @@
 /// <reference path="../typings/globals.d.ts" />
+
 import path = require('path');
+
 var resolve : typeof Promise.resolve = Promise.resolve.bind(Promise)
 
 export function getHoverInfo(p:Hover.Position) : Promise<Hover.Info> {
@@ -15,6 +17,10 @@ export function isHoverExt(filePath:string):boolean {
   var ext      = path.extname(filename);
   return (ext === '.hs' || ext === '.lhs'); // for .haskell files
 }
+
+// import { BufferedProcess } from "atom";
+// var pp = new BufferedProcess('cat');
+
 
 /*
 export function quickInfo(query: QuickInfoQuery): Promise<QuickInfoResponse> {

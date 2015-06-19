@@ -4,7 +4,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-import { $ } from "atom-space-pen-views";
+import { $ }         from "space-pen";
 import emissary    = require('emissary');
 import fs          = require('fs');
 import tooltipView = require('./tooltipView');
@@ -154,7 +154,7 @@ function screenPositionFromMouseEvent(editorView, event) {
 /* Top-level hook into ATOM                                              */
 /*************************************************************************/
 
-declare var atom: any;
+// declare var atom: any;
 
 var editorWatch: AtomCore.Disposable;
 
