@@ -4,22 +4,24 @@ import path = require('path');
 
 var resolve : typeof Promise.resolve = Promise.resolve.bind(Promise)
 
-export var dummyProvider : Hover.Provider = {
-  getHoverInfo : function(p:Hover.Position) : Promise<Hover.Info> {
-                    var msg = "I am at file: " + p.file +
-                              " line: "        + p.line +
-                              " column: "      + p.column;
-                    var res = { valid: true, info : msg };
-                    return resolve(res);
-                  },
-  isHoverExt : function(filePath:string):boolean {
-                 var filename = path.basename(filePath);
-                 var ext      = path.extname(filename);
-                 return (ext === '.hs' || ext === '.lhs'); // for .haskell files
-               }
+function dummyInfo(p:Hover.Position) : Promise<Hover.Info> {
+  var msg = "I am at file: " + p.file +
+            " line: "        + p.line +
+            " column: "      + p.column;
+  var res = { valid: true, info : msg };
+  return resolve(res);
 }
 
+function isHaskell(filePath:string):boolean {
+  var filename = path.basename(filePath);
+  var ext      = path.extname(filename);
+  return (ext === '.hs' || ext === '.lhs'); // for .haskell files
+}
 
+export var dummyProvider : Hover.Provider = {
+  getHoverInfo: dummyInfo,
+  isHoverExt: isHaskell
+}
 
 // import { BufferedProcess } from "atom";
 // var pp = new BufferedProcess('cat');
