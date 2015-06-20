@@ -15,6 +15,6 @@ declare module Hover {
 
   export interface Provider {
     isHoverExt(filePath:string):boolean;
-    getHoverInfo(p:Hover.Position) : Promise<Hover.Info>;
+    getHoverInfo(p:Hover.Position):Promise<Hover.Info>;
   }
 }

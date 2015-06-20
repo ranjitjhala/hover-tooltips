@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "emissary": "^1.3.3",
-    "atom-space-pen-views": "^2.0.3"
+    "atom-space-pen-views": "^2.0.3",
+    "temp": "^0.8.1",
+    "fs": "~0.0.2",
+    "q": "~1.0.0"
   },
   "devDependencies": {
     "typescript": "*",

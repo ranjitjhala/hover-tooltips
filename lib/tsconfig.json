@@ -16,9 +16,11 @@
     ],
     "files": [
         "./getInfo.ts",
+        "./hdevtools-process.ts",
         "./hover-tooltips.d.ts",
         "./hover-tooltips.ts",
         "./tooltipView.ts",
+        "./util.ts",
         "./view.ts"
     ]
 }
