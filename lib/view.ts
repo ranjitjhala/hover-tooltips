@@ -1,4 +1,6 @@
-import sp = require('atom-space-pen-views');
+
+
+import sp = require("atom-space-pen-views");
 
 export class View<Options> extends sp.View {
     get $(): JQuery {

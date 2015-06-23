@@ -1,10 +1,11 @@
 {
   "name": "hover-tooltips",
-  "main": "./lib/hdevtools",
+  "main": "./lib/hover-tooltips",
   "version": "0.1.0",
   "author": "Ranjit Jhala",
-  "description": "Hover Tooltips for Atom",
-  "keywords": [ "atom", "hover tooltips", "service"],
+  "description": "Mouse Hover Tooltips for Atom",
+  "keywords": [
+  ],
   "activationCommands": {
   },
   "repository": "https://github.com/ranjitjhala/hover-tooltips",

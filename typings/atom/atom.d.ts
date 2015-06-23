@@ -909,7 +909,6 @@ declare module AtomCore {
 		getRootDirectory():PathWatcher.IDirectory;
 		resolve(uri:string):string;
 		relativize(fullPath:string):string;
-		relativizePath(fullPath:string):string[];
 		contains(pathToCheck:string):boolean;
 		open(filePath:string, options?:any):Q.Promise<IEditor>;
 		openSync(filePath:string, options?:any):IEditor;
