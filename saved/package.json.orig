@@ -18,5 +18,16 @@
     "atom-space-pen-views": "^2.0.3",
     "fs": "~0.0.2",
     "q": "~1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "*",
+    "grunt-ts": "~1.6.4",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.5.0"
+  },
+  "scripts": {
+    "quickstart": "npm install && grunt",
+    "dev": "grunt && grunt watch"
   }
 }
