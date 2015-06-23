@@ -1,4 +1,4 @@
-/// <reference path="../typings/globals.d.ts" />
+/// <reference path="../typings/hover.d.ts" />
 
 import path          = require('path');
 import child_process = require('child_process');
