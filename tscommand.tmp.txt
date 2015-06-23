@@ -1,1 +1,0 @@
-"lib/hover-tooltips.ts" --sourcemap --declaration --target ES3 --module commonjs
