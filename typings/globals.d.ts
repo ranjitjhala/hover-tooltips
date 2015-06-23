@@ -2,6 +2,12 @@
 
 declare module Hover {
 
+  export interface Command {
+    cmd:string;
+    args:string[];
+    // opts:{cwd:string};
+  }
+
   export interface Position {
     file:string;
     line:number;
@@ -13,8 +19,10 @@ declare module Hover {
     info:string;
   }
 
+  type IProvider = (p:Hover.Position) => Promise<Hover.Info>;
+
   export interface Provider {
-    isHoverExt(filePath:string):boolean;
-    getHoverInfo(p:Hover.Position):Promise<Hover.Info>;
+    command(p:Hover.Position):Hover.Command;
+    result(msg:string[]):string; // should use an option
   }
 }

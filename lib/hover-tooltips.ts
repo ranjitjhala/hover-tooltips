@@ -9,24 +9,31 @@ import emissary    = require('emissary');
 import fs          = require('fs');
 import tooltipView = require('./tooltipView');
 import TooltipView = tooltipView.TooltipView;
-import Info        = require('./getInfo');
+import Info        = require('./info');
 
 var Subscriber = emissary.Subscriber;
 
+export function debug(msg:string){
+  if (false){
+    console.log("HOVER-TOOLTIPS: " + msg);
+  }
+}
 function getFromShadowDom(element: any, selector: string): any {
   var el = element[0];
   var found = (<any> el).rootElement.querySelectorAll(selector);
   return $(found[0]);
 }
 
-function mkAttach(provider:Hover.Provider) {
+function mkAttach(iprovider:Hover.IProvider) {
 
 return function attach(editorView : JQuery, editor: AtomCore.IEditor){
     var rawView: any = editorView[0];
 
     // Only on ".ts" files
     var filePath = editor.getPath();
-    if (!provider.isHoverExt(filePath)) return;
+    var projectDir = atom.project.relativize(filePath); //[0];
+    // debug("HOVER-TOOLTIPS-ATTACH: " + projectDir);
+    // if (!provider.isHoverExt(filePath)) return;
 
     // We only create a "program" once the file is persisted to disk
     if (!fs.existsSync(filePath)) return;
@@ -94,14 +101,16 @@ return function attach(editorView : JQuery, editor: AtomCore.IEditor){
                   ,  column : 1 + bufferPt.column };
 
         // Actually make the program manager query
-        provider.getHoverInfo(pos).then((resp) => {
+        iprovider(pos).then((resp) => {
           if (!resp.valid) {
             hideExpressionType();
           } else {
-            var message = `<b>${(resp.info) }</b>`;
+            var msg = resp.info; // .replace(/\n/g, "<br>");
+            msg = `<b>${msg}</b>`;
+            // debug("TOOLTIP: " + msg);
             // Sorry about this "if". It's in the code I copied so I guess its there for a reason
             if (exprTypeTooltip) {
-              exprTypeTooltip.updateText(message);
+              exprTypeTooltip.updateText(msg);
             }
           }
         });
@@ -130,13 +139,13 @@ return function attach(editorView : JQuery, editor: AtomCore.IEditor){
 
 
 // Optimized version where we do not ask this of the languageServiceHost
-export function getEditorPosition(editor: AtomCore.IEditor): number {
+function getEditorPosition(editor: AtomCore.IEditor): number {
     var bufferPos = editor.getCursorBufferPosition();
     return getEditorPositionForBufferPosition(editor, bufferPos);
 }
 
 // Further optimized if you already have the bufferPos
-export function getEditorPositionForBufferPosition(editor: AtomCore.IEditor, bufferPos: any /* TextBuffer.IPoint */): number {
+function getEditorPositionForBufferPosition(editor: AtomCore.IEditor, bufferPos: any /* TextBuffer.IPoint */): number {
     var buffer = editor.getBuffer();
     return buffer.characterIndexForPosition(bufferPos);
 }
@@ -157,20 +166,26 @@ function screenPositionFromMouseEvent(editorView, event) {
 /* Top-level hook into ATOM                                              */
 /*************************************************************************/
 
-// declare var atom: any;
+export class HoverTooltips {
 
-var editorWatch: AtomCore.Disposable;
-var attach = mkAttach(Info.dummyProvider);
+  private editorWatch: AtomCore.Disposable;
 
-export function activate() {
-  editorWatch = atom.workspace.observeTextEditors((editor:AtomCore.IEditor) => {
-    var editorView = $(atom.views.getView(editor));
-    attach(editorView, editor);
-  });
-}
+  provider:Hover.Provider;
 
-export function deactivate() {
-  if (editorWatch) {
-    editorWatch.dispose();
+  syntax:string;
+
+  activate() {
+    this.editorWatch = atom.workspace.observeTextEditors((editor:AtomCore.IEditor) => {
+      var editorView = $(atom.views.getView(editor));
+      var iprovider  = Info.provider(this.provider);
+      var attach = mkAttach(iprovider);
+      attach(editorView, editor);
+    });
+  }
+
+  deactivate() {
+    if (this.editorWatch) {
+      this.editorWatch.dispose();
+    }
   }
 }
