@@ -3,7 +3,7 @@ import view = require('./view');
 
 var $ = view.$;
 
-interface Rect {
+export interface Rect {
     left: number;
     right: number;
     top: number;
