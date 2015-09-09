@@ -19,7 +19,7 @@ declare module Hover {
     info:string;
   }
 
-  type IProvider = (p:Hover.Position) => Promise<Hover.Info>;
+  export type IProvider = (p:Hover.Position) => Promise<Hover.Info>;
 
   export interface Provider {
     command(p:Hover.Position):Hover.Command;

@@ -170,15 +170,14 @@ export class HoverTooltips {
 
   private editorWatch: AtomCore.Disposable;
 
-  provider:Hover.Provider;
+  provider:Hover.IProvider;
 
   syntax:string;
 
   activate() {
     this.editorWatch = atom.workspace.observeTextEditors((editor:AtomCore.IEditor) => {
       var editorView = $(atom.views.getView(editor));
-      var iprovider  = Info.provider(this.provider);
-      var attach = mkAttach(iprovider);
+      var attach = mkAttach(this.provider);
       attach(editorView, editor);
     });
   }
