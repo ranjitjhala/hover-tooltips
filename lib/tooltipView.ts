@@ -19,6 +19,7 @@ export class TooltipView extends view.View<Rect> {
     }
 
     private inner: JQuery;
+
     static content() {
         return this.div({ class: 'tooltip hover-identifier-tooltip' }, () => {
             this.div({ class: 'tooltip-inner', outlet: 'inner' })

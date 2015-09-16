@@ -17,11 +17,8 @@
     "files": [
         "./hover-tooltips.d.ts",
         "./hover-tooltips.ts",
-        "./info.d.ts",
         "./info.ts",
-        "./tooltipView.d.ts",
         "./tooltipView.ts",
-        "./view.d.ts",
         "./view.ts"
     ]
 }
