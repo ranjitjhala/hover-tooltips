@@ -163,6 +163,16 @@ function screenPositionFromMouseEvent(editorView, event) {
 }
 
 /*************************************************************************/
+/* Creating a Provider                                                   */
+/*************************************************************************/
+
+// Hmm. Isn't there a re-export mechanism?
+
+export function provider(p:Hover.Provider):Hover.IProvider {
+  return Info.provider(p);
+}
+
+/*************************************************************************/
 /* Top-level hook into ATOM                                              */
 /*************************************************************************/
 
