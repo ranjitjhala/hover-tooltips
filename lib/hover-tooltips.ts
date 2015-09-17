@@ -95,10 +95,13 @@ return function attach(editorView : JQuery, editor: AtomCore.IEditor){
         exprTypeTooltip = new TooltipView(tooltipRect);
 
         var position = getEditorPositionForBufferPosition(editor, bufferPt);
-
+        var lineText = editor.lineTextForBufferRow(bufferPt.row);
+        debug("HOVERBLAHBLAH: " + lineText);
         var pos  = { file   : filePath
-                  ,  line   : 1 + bufferPt.row
-                  ,  column : 1 + bufferPt.column };
+                   , line   : 1 + bufferPt.row
+                   , column : 1 + bufferPt.column
+                   , text   : lineText
+                   };
 
         // Actually make the program manager query
         iprovider(pos).then((resp) => {
