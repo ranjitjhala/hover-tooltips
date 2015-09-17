@@ -28,12 +28,13 @@ export function provider(p:Hover.Provider):Hover.IProvider {
     return { valid: false, info: text };
   }
 
-  function execPromise(cmd:Hover.Command):Promise<string[]> {
-    var cmd_ = cmd.cmd + ' ' + cmd.args.join(' ');
-    return Q.nfcall(child_process.exec, cmd_);
+  function execPromise(cmd:Hover.Command):Q.Promise<string[]> {
+    var cmd_  = cmd.cmd + ' ' + cmd.args.join(' ');
+    var r:any = Q.nfcall(child_process.exec, cmd_);
+    return r;
   }
 
-  function dummyInfo2(pos:Hover.Position) : Promise<Hover.Info> {
+  function dummyInfo2(pos:Hover.Position) : Q.Promise<Hover.Info> {
     var cmd = p.command(pos);
     return execPromise(cmd)
              .then(okInfo)
