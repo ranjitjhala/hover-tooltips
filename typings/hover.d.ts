@@ -12,6 +12,7 @@ declare module Hover {
     file:string;
     line:number;
     column:number;
+    text:string; // contents at the given line
   }
 
   export interface Error {
