@@ -14,15 +14,23 @@ declare module Hover {
     column:number;
   }
 
+  export interface Error {
+    file:string;
+    start:Position;
+    end:Position;
+  }
+
   export interface Info {
     valid:boolean;
     info:string;
   }
 
-  export type IProvider = (p:Hover.Position) => Q.Promise<Hover.Info>;
+  export type IProvider = (p:Position) => Q.Promise<Info>;
+
+  export type Eprovider = (f:string) => Q.Promise<Error[]>;
 
   export interface Provider {
-    command(p:Hover.Position):Hover.Command;
+    command(p:Position):Command;
     result(msg:string[]):string; // should use an option
   }
 }
