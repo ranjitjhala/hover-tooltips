@@ -95,16 +95,16 @@ return function attach(editorView : JQuery, editor: AtomCore.IEditor){
         exprTypeTooltip = new TooltipView(tooltipRect);
 
         var position = getEditorPositionForBufferPosition(editor, bufferPt);
+                       // RJ: ignore the error: atom.d.ts is stale
         var lineText = editor.lineTextForBufferRow(bufferPt.row);
         debug("HOVERBLAHBLAH: " + lineText);
         var pos  = { file   : filePath
                    , line   : 1 + bufferPt.row
                    , column : 1 + bufferPt.column
-                   , text   : lineText
                    };
 
         // Actually make the program manager query
-        iprovider(pos).then((resp) => {
+        iprovider(pos, lineText).then((resp) => {
           if (!resp.valid) {
             hideExpressionType();
           } else {
