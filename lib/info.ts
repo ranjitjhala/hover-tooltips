@@ -17,7 +17,7 @@ export function provider(p:Hover.Provider):Hover.IProvider {
   }
 
   function errInfo(text:string):Hover.Info {
-    console.log("ERROR Info: " + text);
+    // console.log("ERROR Info: " + text);
     atom.confirm({
       message: "Hover Info Error" + text,
       detailedMessage: text,
