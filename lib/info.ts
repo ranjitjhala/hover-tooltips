@@ -10,7 +10,7 @@ export function provider(p:Hover.Provider):Hover.IProvider {
   function okInfo(text:string[]):Hover.Info {
     var ty = p.result(text);
     if (ty){
-      console.log("OK Info: " + ty);
+      // console.log("OK Info: " + ty);
       return { valid: true, info: ty};
     }
     return { valid: false, info: text.join('\n') };
