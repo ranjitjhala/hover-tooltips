@@ -8,7 +8,9 @@ mouseover-identifier tooltips in the amazing [Atom](http://atom.io) editor!
 ## Usage
 
 To get hover-tooltips for your favorite language, create a suitable 
-subclass of `HoverTooltips`. See [this]() for an example.
+subclass of `HoverTooltips`. Examples:
+
++ [hover-tooltips-hdevtools](https://atom.io/packages/hover-tooltips-hdevtools)
 
 ## Inspirations
 
