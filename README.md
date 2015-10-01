@@ -14,5 +14,5 @@ subclass of `HoverTooltips`. Examples:
 
 ## Inspirations
 
-+ ![ide-haskell](http://atom-haskell.github.io/ide-haskell)
-+ ![atom-typescript](https://github.com/TypeStrong/atom-typescript)
++ [ide-haskell](http://atom-haskell.github.io/ide-haskell)
++ [atom-typescript](https://github.com/TypeStrong/atom-typescript)
