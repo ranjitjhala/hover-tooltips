@@ -47,9 +47,7 @@ return function attach(editorView : JQuery, editor: AtomCore.IEditor){
     var lastExprTypeBufferPt: any;
 
     subscriber.subscribe(scroll, 'mousemove', (e) => {
-        var pixelPt = pixelPositionFromMouseEvent(editorView, e)
-        var screenPt = editor.screenPositionForPixelPosition(pixelPt)
-        var bufferPt = editor.bufferPositionForScreenPosition(screenPt)
+        var bufferPt = bufferPositionForMouseEvent(e);
         if (lastExprTypeBufferPt && lastExprTypeBufferPt.isEqual(bufferPt) && exprTypeTooltip)
             return;
 
@@ -74,11 +72,8 @@ return function attach(editorView : JQuery, editor: AtomCore.IEditor){
         // If we are already showing we should wait for that to clear
         if (exprTypeTooltip) return;
 
-        var pixelPt = pixelPositionFromMouseEvent(editorView, e);
-        pixelPt.top += editor.displayBuffer.getScrollTop();
-        pixelPt.left += editor.displayBuffer.getScrollLeft();
-        var screenPt = editor.screenPositionForPixelPosition(pixelPt);
-        var bufferPt = editor.bufferPositionForScreenPosition(screenPt);
+        var bufferPt = bufferPositionForMouseEvent(e);
+
         var curCharPixelPt = rawView.pixelPositionForBufferPosition([bufferPt.row, bufferPt.column]);
         var nextCharPixelPt = rawView.pixelPositionForBufferPosition([bufferPt.row, bufferPt.column + 1]);
 
@@ -137,6 +132,11 @@ return function attach(editorView : JQuery, editor: AtomCore.IEditor){
         exprTypeTooltip.$.remove();
         exprTypeTooltip = null;
     }
+
+    function bufferPositionForMouseEvent(e: MouseEvent) {
+      var screenPt = rawView.component.screenPositionForMouseEvent(e);
+      return editor.bufferPositionForScreenPosition(screenPt);
+    }
 }
 }
 
@@ -153,17 +153,7 @@ function getEditorPositionForBufferPosition(editor: AtomCore.IEditor, bufferPos:
     return buffer.characterIndexForPosition(bufferPos);
 }
 
-function pixelPositionFromMouseEvent(editorView, event: MouseEvent) {
-    var clientX = event.clientX, clientY = event.clientY;
-    var linesClientRect = getFromShadowDom(editorView, '.lines')[0].getBoundingClientRect();
-    var top = clientY - linesClientRect.top;
-    var left = clientX - linesClientRect.left;
-    return { top: top, left: left };
-}
 
-function screenPositionFromMouseEvent(editorView, event) {
-    return editorView.getModel().screenPositionForPixelPosition(pixelPositionFromMouseEvent(editorView, event));
-}
 
 /*************************************************************************/
 /* Creating a Provider                                                   */
